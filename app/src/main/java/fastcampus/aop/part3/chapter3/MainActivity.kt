@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     /** 알람매니저를 등록하고 시간이되면 노티를 생성해서 띄우는 형식으로 구현되어있는데
      * 알람 매니저는 많이 쓰기 때문에 안드로이드 문서를 보고 직접 구현을 다시 해봐야 겠다
      * 노티도 생각보다 앱에서 많이 사용하기때문에 , 구현방법을 꼭 숙지하자
-      */
+     */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         val onOffButton = findViewById<Button>(R.id.onOffButton)
         onOffButton.setOnClickListener {
 
-            // tag값이 없으면 종료 , model 데이터가 있으면 val model에 대입
+            // 버튼 tag에 저장된값이 없으면 종료 , model 데이터가 있으면 val model에 대입
             val model = it.tag as? AlarmDisplayModel ?: return@setOnClickListener
             // .not 은 !와 같은 의미 , 사용자가 지정한 값으로 저장 model.onOff.not()을 하는 이유는 켜기에서 클릭 -> 끄기 , 끄기에서 클릭 -> 켜기 구현
             val newModel = saveAlarmModel(model.hour, model.minute, model.onOff.not())
@@ -54,8 +54,16 @@ class MainActivity : AppCompatActivity() {
             if (newModel.onOff) {
                 // 켜진 경우 -> 알람을 등록
                 val calendar = Calendar.getInstance().apply {
+                    // 캘린더에 설정된값 가져오기
                     set(Calendar.HOUR_OF_DAY, newModel.hour) // 시간
                     set(Calendar.MINUTE, newModel.minute) // 분
+
+                    // 현재 설정된값이랑 기존에 캘린더 값이랑 비교 이후면 true 이전이면 false(현재 시간)
+                    // 변경된값은 현재 시간보다 이전인가? yes -> true 당일에 울림 , no -> false 하루 뒤에 울림
+//                    {Calendar 개체}.after({비교대상})
+//                    이 기본 문법인데, 이것을 이해하는 방법은 아래와 같다.
+//                    {Calendar 개체} after then {비교대상}
+//                    즉, “{비교대상}보다 {Calendar 개체}가 이후 인가?”라는 의미와 같다.
 
                     if (before(Calendar.getInstance())) {
                         add(Calendar.DATE, 1)
@@ -191,7 +199,8 @@ class MainActivity : AppCompatActivity() {
         // on off 글씨 변경
         findViewById<Button>(R.id.onOffButton).apply {
             text = model.onOffText
-            // 태그안에 모델 저장
+            // 버튼 태그 안에 모델값 저장
+            // 문자열부터, 숫자, 객체, 등 자바의 모든 데이터를 저장할 수 있다.
             tag = model
         }
 
